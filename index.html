@@ -1,0 +1,266 @@
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="mystyle.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300" rel="stylesheet">
+  <!-- resource for text font -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+
+  <style>
+       h1 {
+         font-family: 'Montserrat', sans-serif;
+         font-size: 38px;
+       }
+       .logotext{  font-family: 'Montserrat', sans-serif;
+         font-size:25px;
+         margin: 10px 50px;
+         letter-spacing: 6px;
+         font-weight:lighter;
+         color: white;
+         text-align:center;}
+     </style>
+  </head>
+  <body>
+    <div class="logo">
+      <!-- header div -->
+<div class="logotext" id="typedtext"> </div>
+    </div class="logo">
+
+
+
+    <div id="snackbar"></div>
+    <div class="Search">
+
+      <form id="frm1" class="inputsearch" >
+        <!-- input field for search keyword -->
+
+
+
+
+      <input type="text"   id="userinput" class="textlinesearch" placeholder="Enter Keyword "><br>
+      <button type="button"  class="mybuttonsearch" onclick="getBook(); document.getElementById('modal-wrapper').style.display='block'">SEARCH BOOK</button>
+    </form class="inputsearch">
+      <br>
+      <br>
+
+    </div class="Search">
+    <div class="Save" id="save">
+      <!-- input field for saving book -->
+      <form id="frm2"  class="inputform" >
+
+  <input type="text" name="author" id="author" placeholder="author" class="textline"><br><br>
+  <input type="text" name="title" id="title" placeholder="title" class="textline" ><br><br>
+
+  <select id="genre" class="textline2" >
+  <option value="Science fiction">Science fiction</option>
+  <option value="Satire">Satire</option>
+  <option value="Drama">Drama</option>
+  <option value="Action and Adventure">Action and Adventure</option>
+  <option value="Romance">Romance</option>
+  <option value="Mystery">Mystery</option>
+  <option value="Horror">Horror</option>
+  </select><br>
+
+  <br>
+  <input type="text" name="price" id="price" placeholder="price" class="textline">
+</form class="inputform">
+
+  <button type="button"  class="mybutton" onclick="loadDoc()">SAVE BOOK</button>
+  </div class="Save">
+
+
+
+
+  <div id="modal-wrapper" class="modal">
+    <!-- pop up for search results -->
+
+    <form class="modal-content animate" >
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
+
+
+      </div>
+
+        <h2> Search Results</h2><br><br>
+  <div id="log" class="logresults">
+
+
+  </div>
+      <div class="container" >
+
+
+        <table id="mytable" class="mytable">
+
+      <br>  </table class="mytable">
+      </div class="container">
+    </form>
+
+
+  </div class="modal">
+  <div class="footer">
+
+    <p>  Posted by : Spyridon Skordos</p>
+    <p>Contact information:  <a href="mailto:it21544@hua.gr" style= "color: #00b8e6">
+it21544@hua.gr</a></p>
+  </div>
+  <script>
+  // set up text to print, each item in array is new line
+var aText = new Array(//resourse for this effect https://css-tricks.com
+"The Book Library"
+);
+var iSpeed = 100; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = aText[0].length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+
+function typewriter()//resourse for this effect https://css-tricks.com
+{
+ sContents =  ' ';
+ iRow = Math.max(0, iIndex-iScrollAt);
+ var destination = document.getElementById("typedtext");
+
+ while ( iRow < iIndex ) {
+  sContents += aText[iRow++] + '<br />';
+ }
+ destination.innerHTML = sContents + aText[iIndex].substring(0, iTextPos) ;
+ if ( iTextPos++ == iArrLength ) {
+  iTextPos = 0;
+  iIndex++;
+  if ( iIndex != aText.length ) {
+   iArrLength = aText[iIndex].length;
+   setTimeout("typewriter()", 500);
+  }
+ } else {
+  setTimeout("typewriter()", iSpeed);
+ }
+}
+
+
+typewriter();
+</script>
+
+
+  <script>
+  function myFunction() {//function to print alerts into snackbar
+      var x = document.getElementById("snackbar");
+      x.className = "show";
+      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+  }
+  //search a book function
+  function getBook() {
+    var request = new XMLHttpRequest();
+    var userinput=   document.getElementById("userinput").value;
+    document.getElementById("mytable").innerHTML = "";
+
+    request.open('GET', 'https://booklibit21544.azurewebsites.net/books/?keyword='+userinput, true);
+    request.onload = function () {
+
+      // Begin accessing JSON data here
+      var data = JSON.parse(this.response);
+
+
+      if (request.status >= 200 && request.status < 400) {//means that no book is found
+        if(data.length==0){
+
+          document.getElementById('log').innerHTML = "No Book Found For This Keyword";
+          document.getElementById('userinput').value = '';
+
+        }else{
+        data.forEach(books => {
+          var table = document.getElementById("mytable");
+          var row = table.insertRow(0);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(1);
+          var cell3=row.insertCell(2);
+          var cell4=row.insertCell(3);
+          cell1.innerHTML = books.title;
+          cell2.innerHTML = books.author;
+          cell3.innerHTML=books.genre;
+          cell4.innerHTML=books.price;
+
+          document.getElementById('userinput').value = '';
+
+        });
+        var table = document.getElementById("mytable");
+        var row = table.insertRow(0);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3=row.insertCell(2);
+        var cell4=row.insertCell(3);
+        cell1.innerHTML = "TITLE";
+        cell2.innerHTML = "AUTHOR";
+        cell3.innerHTML="GENRE";
+        cell4.innerHTML="PRICE";
+      }
+      } else {
+        console.log('error');
+      }
+    }
+
+    request.send();
+
+  }
+
+
+  // If user clicks anywhere outside of the modal, Modal will close
+
+  var modal = document.getElementById('modal-wrapper');
+  window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+  }
+
+  function loadDoc() {
+
+    var author= document.getElementById("author").value;
+    var title= document.getElementById("title").value;
+    var genre= document.getElementById("genre").value;
+    var price= document.getElementById("price").value;
+
+    if (author.trim()=='' || title.trim()=='' || genre.trim()=='' || price.trim()=='')//check if all fields are completed
+            {
+
+              document.getElementById("snackbar").innerHTML =
+              "Please fill all the fields";
+              myFunction();
+
+            }else{
+              if(isNaN(price)==true){//check if price is int
+
+                document.getElementById("snackbar").innerHTML =
+                "Price must be a number";
+                myFunction();
+              }else{
+    var xhr = new XMLHttpRequest();
+    var url = "https://booklibit21544.azurewebsites.net/books/";
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+
+      document.getElementById("snackbar").innerHTML =
+      this.responseText ;
+      myFunction();
+
+      }
+    };
+    var data = JSON.stringify({"author": author, "title": title, "genre": genre,"price" : price});
+    xhr.send(data);
+            document.getElementById('author').value = '';//reset all text inputs
+            document.getElementById('title').value = '';
+            document.getElementById('genre').value = '';
+            document.getElementById('price').value = '';
+  }
+  }
+  }
+  </script>
+
+  </body>
+  </html>
